@@ -3,59 +3,40 @@
     "tasks": [
         {
             "label": "build SFML (Debug)",
-            "type": "shell",
-            "command": "cl",
+            "type": "process",
+            "command": "cl.exe",
             "args": [
                 "/nologo",
                 "/EHsc",
-                "/std:c++17",
+                "/std:c++14",
                 "/MDd",
                 "/Zi",
                 "/Od",
-                "/IC:\\Users\\David\\Documents\\GitHub\\SFML-2.6.2\\include",
+                "/I${workspaceFolder}\\headers",
+                "/I${workspaceFolder}\\sfml\\include",
                 "${workspaceFolder}\\src\\main.cpp",
-                "/Fe:\"${workspaceFolder}\\build e obj\\main.exe\"",
-                "/Fo\"${workspaceFolder}\\build e obj\\main.obj\"",
-                "/Fd\"${workspaceFolder}\\build e obj\\main.pdb\"",
+                "${workspaceFolder}\\src\\Jogo.cpp",
+                "${workspaceFolder}\\src\\Jogador.cpp",
+                "${workspaceFolder}\\src\\Gerenciador_Grafico.cpp",
+                "/Fe${workspaceFolder}\\build e obj\\main.exe",
+                "/Fd${workspaceFolder}\\build e obj\\main.pdb",
                 "/link",
                 "/DEBUG",
-                "/LIBPATH:C:\\Users\\David\\Documents\\GitHub\\SFML-2.6.2\\lib",
+                "/LIBPATH:${workspaceFolder}\\sfml\\bin",
                 "sfml-graphics-d.lib",
                 "sfml-window-d.lib",
-                "sfml-audio-d.lib",
-                "sfml-network-d.lib",
                 "sfml-system-d.lib"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
-        {
-            "type": "cppbuild",
-            "label": "C/C++: cl.exe arquivo de build ativo",
-            "command": "cl.exe",
-            "args": [
-                "/Zi",
-                "/EHsc",
-                "/nologo",
-                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "${file}"
-            ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}\\build e obj"
             },
-            "problemMatcher": [
-                "$msCompile"
-            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Tarefa gerada pelo Depurador."
+            "problemMatcher": [
+                "$msCompile"
+            ]
         }
     ]
 }
