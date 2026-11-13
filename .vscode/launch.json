@@ -8,14 +8,14 @@
             "name": "Depurar main.exe (SFML)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build e obj/main.exe",
+            "program": "${workspaceFolder}\\build e obj\\main.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build e obj",
+            "cwd": "${workspaceFolder}\\build e obj",
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/sfml;${env:PATH}"
+                    "value": "${workspaceFolder}\\sfml\\bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal",
