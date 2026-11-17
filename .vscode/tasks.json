@@ -8,7 +8,7 @@
             "args": [
                 "/d",
                 "/c",
-                "call \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat\" >nul && cl /nologo /EHsc /std:c++17 /MDd /Zi /Od /IC:\\SFML-2.6.2\\include \"${workspaceFolder}\\src\\main.cpp\" /Fe:\"${workspaceFolder}\\build e obj\\main.exe\" /Fo:\"${workspaceFolder}\\build e obj\\main.obj\" /Fd:\"${workspaceFolder}\\build e obj\\main.pdb\" /link /DEBUG /LIBPATH:C:\\SFML-2.6.2\\lib sfml-graphics-d.lib sfml-window-d.lib sfml-audio-d.lib sfml-network-d.lib sfml-system-d.lib"
+                "call \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat\" >nul && cl /nologo /EHsc /std:c++14 /MDd /Zi /Od /I\"${workspaceFolder}\\headers\" /IC:\\SFML-2.6.2\\include \"${workspaceFolder}\\src\\main.cpp\" \"${workspaceFolder}\\src\\Jogo.cpp\" \"${workspaceFolder}\\src\\Jogador.cpp\" \"${workspaceFolder}\\src\\Gerenciador_Grafico.cpp\" /Fe:\"${workspaceFolder}\\build e obj\\main.exe\" /Fd:\"${workspaceFolder}\\build e obj\\main.pdb\" /link /DEBUG /LIBPATH:C:\\SFML-2.6.2\\lib sfml-graphics-d.lib sfml-window-d.lib sfml-system-d.lib"
             ],
             "group": {
                 "kind": "build",

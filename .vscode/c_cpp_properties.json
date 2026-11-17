@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "MSVC x64 (C++03)",
+            "includePath": [
+                "${workspaceFolder}\\headers",
+                "${workspaceFolder}\\**",
+                "${workspaceFolder}\\sfml\\include"
+            ],
+            "compilerPath": "cl.exe",
+            "cppStandard": "c++03",
+            "intelliSenseMode": "windows-msvc-x64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}\\headers",
+                    "${workspaceFolder}\\src",
+                    "${workspaceFolder}\\sfml\\include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}
