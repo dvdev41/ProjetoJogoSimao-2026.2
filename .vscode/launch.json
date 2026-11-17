@@ -1,7 +1,4 @@
 {
-    // Use o IntelliSense para saber mais sobre os atributos possíveis.
-    // Focalizar para exibir as descrições dos atributos existentes.
-    // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -11,11 +8,11 @@
             "program": "${workspaceFolder}\\build e obj\\main.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}\\build e obj",
+            "cwd": "${workspaceFolder}",
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "C:\\SFML-2.6.2\\bin;${workspaceFolder}\\src;${env:PATH}"
+                    "value": "${workspaceFolder}\\third_party\\SFML;C:\\SFML-2.6.2\\bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal",
