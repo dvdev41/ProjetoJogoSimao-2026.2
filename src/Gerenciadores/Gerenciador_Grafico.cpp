@@ -1,4 +1,4 @@
-#include "Gerenciador_Grafico.h"
+#include "Gerenciadores/Gerenciador_Grafico.h"
 
 Gerenciador_Grafico::Gerenciador_Grafico(
     unsigned int largura,

@@ -1,11 +1,27 @@
 #include "Jogo.h"
 
 #include <SFML/System/Clock.hpp>
+#include <stdexcept>
 
 Jogo::Jogo()
-    : gerenciadorGrafico_(800, 600, "Jogo do Simao"),
-      jogador_(80.0f, gerenciadorGrafico_.getPosicaoChao())
+    : gerenciadorGrafico_(800, 600, "Aventura do Sapo Ninja"),
+      sapoNinja_(80.0f, gerenciadorGrafico_.getPosicaoChao())
 {
+    const std::string caminhoTextura =
+        "assets/Pixel Adventure 1/Free/Traps/Rock Head/Idle.png";
+    if (!texturaCabecaPedra_.loadFromFile(caminhoTextura))
+    {
+        throw std::runtime_error(
+            "Nao foi possivel carregar o asset: " + caminhoTextura
+        );
+    }
+    cabecaPedra_.setTexture(texturaCabecaPedra_);
+    cabecaPedra_.setScale(2.0f, 2.0f);
+    cabecaPedra_.setPosition(
+        400.0f,
+        gerenciadorGrafico_.getPosicaoChao() -
+            cabecaPedra_.getGlobalBounds().height
+    );
 }
 
 void Jogo::executar()
@@ -26,15 +42,17 @@ void Jogo::executar()
             tempoQuadro = 0.1f;
         }
 
-        jogador_.atualizar(
+        sapoNinja_.atualizar(
             tempoQuadro,
             static_cast<float>(gerenciadorGrafico_.getLarguraJanela()),
             gerenciadorGrafico_.getPosicaoChao()
         );
+        sapoNinja_.colideCom(cabecaPedra_.getGlobalBounds());
 
         gerenciadorGrafico_.limpar();
         gerenciadorGrafico_.desenharChao();
-        jogador_.desenhar(gerenciadorGrafico_);
+        gerenciadorGrafico_.desenhar(cabecaPedra_);
+        sapoNinja_.desenhar(gerenciadorGrafico_);
         gerenciadorGrafico_.exibir();
     }
 }
