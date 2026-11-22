@@ -16,6 +16,8 @@ namespace Fases
     private:
         enum Estado
         {
+            MenuPrincipal,
+            SelecaoFase,
             Introducao,
             Jogando,
             Pausada,
@@ -108,6 +110,7 @@ namespace Fases
     float tempoInicio_;
     float tempoCheckpoint_;
     float tempoSaida_;
+    unsigned int faseSelecionada_;
     unsigned int quadroInicio_;
     unsigned int quadroCheckpoint_;
     unsigned int quadroSaida_;

@@ -6,12 +6,14 @@ shurikens, caixas quebraveis, frutas, armadilhas, checkpoint e chegada.
 
 ## Controles
 
+- Menu inicial: clique em Jogar ou pressione Enter; escolha uma das duas fases
+  com clique, 1 ou 2. Esc retorna ao menu inicial.
 - A/D ou setas: mover
 - Espaco ou W: pular; aperte novamente no ar para o pulo duplo
 - F ou clique esquerdo: atirar shuriken
 - Esc: pausar ou continuar
 - R: reiniciar a fase
-- Enter: iniciar ou voltar a jogar
+- Enter: confirmar ou voltar a jogar
 
 ## Arquitetura
 
@@ -23,8 +25,9 @@ deriva da classe base `Fases::Fase`; e o jogador segue a hierarquia
 colisoes, alem de uma lista de entidades cujos nos nao sao proprietarios dos
 objetos apontados.
 
-Esta reorganizacao preserva a jogabilidade existente de um jogador e uma fase.
-Novas fases, inimigos, menus e persistencia nao foram adicionados.
+O jogo inicia em um menu com acesso a uma tela de selecao entre duas fases.
+A Fase 2 usa uma paleta noturna; ambas reutilizam o percurso e a jogabilidade
+atuais.
 
 ## Build SFML
 
