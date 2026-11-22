@@ -1,100 +1,148 @@
 #include "Gerenciadores/Gerenciador_Grafico.h"
 
-Gerenciador_Grafico::Gerenciador_Grafico(
-    unsigned int largura,
-    unsigned int altura,
-    const std::string& titulo
-)
-    : janela_(sf::VideoMode(largura, altura), titulo),
-      chao_(sf::Vector2f(static_cast<float>(largura), 30.0f)),
-      cliquePendente_(false),
-      teclaFPendente_(false)
-{
-    janela_.setFramerateLimit(60);
-    janela_.setKeyRepeatEnabled(false);
-    chao_.setPosition(
-        0.0f,
-        static_cast<float>(altura) - chao_.getSize().y
-    );
-    chao_.setFillColor(sf::Color(80, 145, 75));
-}
+#include "Entidades/Ente.h"
 
-bool Gerenciador_Grafico::estaAberto() const
-{
-    return janela_.isOpen();
-}
+#include <stdexcept>
 
-void Gerenciador_Grafico::processarEventos()
+namespace Gerenciadores
 {
-    sf::Event evento;
-    while (janela_.pollEvent(evento))
+    Gerenciador_Grafico::Gerenciador_Grafico(
+        unsigned int largura,
+        unsigned int altura,
+        const std::string& titulo
+    )
+        : janela_(sf::VideoMode(largura, altura), titulo),
+          cliquePendente_(false),
+          posicaoClique_(0, 0)
     {
-        if (evento.type == sf::Event::Closed)
+        unsigned int i;
+        for (i = 0; i < sf::Keyboard::KeyCount; ++i)
         {
-            janela_.close();
+            teclasPendentes_[i] = false;
         }
-        else if (evento.type == sf::Event::MouseButtonPressed &&
-                 evento.mouseButton.button == sf::Mouse::Left)
+
+        janela_.setFramerateLimit(60);
+        janela_.setKeyRepeatEnabled(false);
+    }
+
+    bool Gerenciador_Grafico::estaAberto() const
+    {
+        return janela_.isOpen();
+    }
+
+    void Gerenciador_Grafico::processarEventos()
+    {
+        sf::Event evento;
+        while (janela_.pollEvent(evento))
         {
-            posicaoClique_ = sf::Vector2i(
-                evento.mouseButton.x,
-                evento.mouseButton.y
+            if (evento.type == sf::Event::Closed)
+            {
+                janela_.close();
+            }
+            else if (evento.type == sf::Event::KeyPressed)
+            {
+                const int codigo = static_cast<int>(evento.key.code);
+                if (codigo >= 0 && codigo < sf::Keyboard::KeyCount)
+                {
+                    teclasPendentes_[codigo] = true;
+                }
+            }
+            else if (evento.type == sf::Event::MouseButtonPressed &&
+                     evento.mouseButton.button == sf::Mouse::Left)
+            {
+                posicaoClique_ = sf::Vector2i(
+                    evento.mouseButton.x,
+                    evento.mouseButton.y
+                );
+                cliquePendente_ = true;
+            }
+        }
+    }
+
+    bool Gerenciador_Grafico::consumirCliqueMouse(sf::Vector2f& posicao)
+    {
+        if (!cliquePendente_)
+        {
+            return false;
+        }
+
+        posicao = janela_.mapPixelToCoords(posicaoClique_);
+        cliquePendente_ = false;
+        return true;
+    }
+
+    bool Gerenciador_Grafico::consumirPressionamentoTecla(
+        sf::Keyboard::Key tecla
+    )
+    {
+        const int codigo = static_cast<int>(tecla);
+        if (codigo < 0 || codigo >= sf::Keyboard::KeyCount)
+        {
+            return false;
+        }
+
+        const bool pressionada = teclasPendentes_[codigo];
+        teclasPendentes_[codigo] = false;
+        return pressionada;
+    }
+
+    void Gerenciador_Grafico::limpar()
+    {
+        janela_.clear(sf::Color(35, 55, 55));
+    }
+
+    void Gerenciador_Grafico::desenhar(const sf::Drawable& objeto)
+    {
+        janela_.draw(objeto);
+    }
+
+    void Gerenciador_Grafico::desenharEnte(Entidades::Ente* pE)
+    {
+        if (pE == 0)
+        {
+            throw std::invalid_argument(
+                "Nao e possivel desenhar um Ente nulo."
             );
-            cliquePendente_ = true;
         }
-        else if (evento.type == sf::Event::KeyPressed &&
-                 evento.key.code == sf::Keyboard::F)
-        {
-            teclaFPendente_ = true;
-        }
+        pE->desenhar();
     }
-}
 
-bool Gerenciador_Grafico::consumirCliqueMouse(sf::Vector2f& posicao)
-{
-    if (!cliquePendente_)
+    void Gerenciador_Grafico::carregarTextura(
+        sf::Texture& textura,
+        const std::string& caminho
+    ) const
     {
-        return false;
+        if (!textura.loadFromFile(caminho))
+        {
+            throw std::runtime_error(
+                "Nao foi possivel carregar o asset: " + caminho
+            );
+        }
+        textura.setSmooth(false);
     }
 
-    posicao = janela_.mapPixelToCoords(posicaoClique_);
-    cliquePendente_ = false;
-    return true;
-}
+    void Gerenciador_Grafico::exibir()
+    {
+        janela_.display();
+    }
 
-bool Gerenciador_Grafico::consumirPressionamentoF()
-{
-    const bool pressionada = teclaFPendente_;
-    teclaFPendente_ = false;
-    return pressionada;
-}
+    void Gerenciador_Grafico::aplicarVista(const sf::View& vista)
+    {
+        janela_.setView(vista);
+    }
 
-void Gerenciador_Grafico::limpar()
-{
-    janela_.clear(sf::Color(130, 195, 235));
-}
+    void Gerenciador_Grafico::restaurarVistaPadrao()
+    {
+        janela_.setView(janela_.getDefaultView());
+    }
 
-void Gerenciador_Grafico::desenharChao()
-{
-    janela_.draw(chao_);
-}
+    unsigned int Gerenciador_Grafico::getLarguraJanela() const
+    {
+        return janela_.getSize().x;
+    }
 
-void Gerenciador_Grafico::desenhar(const sf::Drawable& objeto)
-{
-    janela_.draw(objeto);
-}
-
-void Gerenciador_Grafico::exibir()
-{
-    janela_.display();
-}
-
-unsigned int Gerenciador_Grafico::getLarguraJanela() const
-{
-    return janela_.getSize().x;
-}
-
-float Gerenciador_Grafico::getPosicaoChao() const
-{
-    return chao_.getPosition().y;
+    unsigned int Gerenciador_Grafico::getAlturaJanela() const
+    {
+        return janela_.getSize().y;
+    }
 }
