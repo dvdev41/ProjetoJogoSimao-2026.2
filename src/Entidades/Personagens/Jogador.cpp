@@ -50,16 +50,38 @@ SapoNinja::SapoNinja(float posicaoX, float topoChao)
     : animacaoAtual_(Animacao::Parado),
       quadroAnimacao_(0),
       tempoAnimacao_(0.0f),
-      olhandoParaEsquerda_(false)
+      olhandoParaEsquerda_(false),
+      tocouPuloDuplo_(false)
 {
     const std::string pasta =
         "assets/Pixel Adventure 1/Free/Main Characters/Ninja Frog/";
     carregarTextura(texturaParado_, pasta + "Idle (32x32).png");
     carregarTextura(texturaCorrendo_, pasta + "Run (32x32).png");
     carregarTextura(texturaPulando_, pasta + "Jump (32x32).png");
+    carregarTextura(texturaPuloDuplo_, pasta + "Double Jump (32x32).png");
     carregarTextura(texturaCaindo_, pasta + "Fall (32x32).png");
 
     sprite_.setTexture(texturaParado_);
+    sprite_.setTextureRect(sf::IntRect(0, 0, TAMANHO_QUADRO, TAMANHO_QUADRO));
+    sprite_.setScale(ESCALA_SPRITE, ESCALA_SPRITE);
+    sprite_.setPosition(
+        posicaoX,
+        topoChao - sprite_.getGlobalBounds().height
+    );
+}
+
+void SapoNinja::reiniciar(float posicaoX, float topoChao)
+{
+    velocidadeVertical_ = 0.0f;
+    estaNoChao_ = true;
+    teclaPuloPressionadaAnteriormente_ = false;
+    pulosDisponiveis_ = 2;
+    olhandoParaEsquerda_ = false;
+    tocouPuloDuplo_ = false;
+    animacaoAtual_ = Animacao::Parado;
+    quadroAnimacao_ = 0;
+    tempoAnimacao_ = 0.0f;
+    sprite_.setTexture(texturaParado_, true);
     sprite_.setTextureRect(sf::IntRect(0, 0, TAMANHO_QUADRO, TAMANHO_QUADRO));
     sprite_.setScale(ESCALA_SPRITE, ESCALA_SPRITE);
     sprite_.setPosition(
@@ -102,7 +124,10 @@ void SapoNinja::atualizar(
     const bool teclaPuloPressionada =
         sf::Keyboard::isKeyPressed(sf::Keyboard::Space) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::W);
-    pularSeSolicitado(teclaPuloPressionada);
+    if (pularSeSolicitado(teclaPuloPressionada))
+    {
+        tocouPuloDuplo_ = true;
+    }
     atualizarGravidade(
         tempoQuadro,
         posicao.y,
@@ -119,11 +144,22 @@ void SapoNinja::atualizarAnimacao(
     bool movendoHorizontalmente
 )
 {
+    if (estaNoChao_)
+    {
+        tocouPuloDuplo_ = false;
+    }
+
     Animacao proximaAnimacao;
     const sf::Texture* textura;
     unsigned int quantidadeQuadros;
 
-    if (!estaNoChao_)
+    if (!estaNoChao_ && tocouPuloDuplo_)
+    {
+        proximaAnimacao = Animacao::PuloDuplo;
+        textura = &texturaPuloDuplo_;
+        quantidadeQuadros = 6;
+    }
+    else if (!estaNoChao_)
     {
         proximaAnimacao =
             velocidadeVertical_ < 0.0f ? Animacao::Pulando : Animacao::Caindo;
@@ -171,13 +207,13 @@ void SapoNinja::atualizarAnimacao(
     );
 }
 
-void SapoNinja::colideCom(const sf::FloatRect& limitesObstaculo)
+bool SapoNinja::colideCom(const sf::FloatRect& limitesObstaculo)
 {
     const sf::FloatRect limitesSapo = sprite_.getGlobalBounds();
     sf::FloatRect intersecao;
     if (!limitesSapo.intersects(limitesObstaculo, intersecao))
     {
-        return;
+        return false;
     }
 
     sf::Vector2f posicao = sprite_.getPosition();
@@ -186,6 +222,22 @@ void SapoNinja::colideCom(const sf::FloatRect& limitesObstaculo)
                      ? -intersecao.width
                      : intersecao.width;
     sprite_.setPosition(posicao);
+    return true;
+}
+
+bool SapoNinja::intersecta(const sf::FloatRect& limites) const
+{
+    return sprite_.getGlobalBounds().intersects(limites);
+}
+
+sf::FloatRect SapoNinja::getLimites() const
+{
+    return sprite_.getGlobalBounds();
+}
+
+bool SapoNinja::olhandoParaEsquerda() const
+{
+    return olhandoParaEsquerda_;
 }
 
 void SapoNinja::desenhar(Gerenciador_Grafico& gerenciadorGrafico) const

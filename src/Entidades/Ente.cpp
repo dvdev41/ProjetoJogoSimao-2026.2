@@ -26,21 +26,26 @@ namespace
 Ente::Ente()
     : velocidadeVertical_(0.0f),
       estaNoChao_(true),
-      teclaPuloPressionadaAnteriormente_(false)
+      teclaPuloPressionadaAnteriormente_(false),
+      pulosDisponiveis_(2)
 {
 }
 
-void Ente::pularSeSolicitado(bool teclaPuloPressionada)
+bool Ente::pularSeSolicitado(bool teclaPuloPressionada)
 {
+    bool puloDuplo = false;
     if (teclaPuloPressionada &&
         !teclaPuloPressionadaAnteriormente_ &&
-        estaNoChao_)
+        pulosDisponiveis_ > 0)
     {
         velocidadeVertical_ = VELOCIDADE_PULO;
         estaNoChao_ = false;
+        --pulosDisponiveis_;
+        puloDuplo = pulosDisponiveis_ == 0;
     }
 
     teclaPuloPressionadaAnteriormente_ = teclaPuloPressionada;
+    return puloDuplo;
 }
 
 void Ente::atualizarGravidade(
@@ -71,6 +76,10 @@ void Ente::atualizarGravidade(
             velocidadeVertical_,
             estaNoChao_
         );
+        if (estaNoChao_)
+        {
+            pulosDisponiveis_ = 2;
+        }
     }
     else
     {

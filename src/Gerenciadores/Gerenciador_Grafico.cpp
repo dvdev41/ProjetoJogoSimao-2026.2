@@ -6,9 +6,12 @@ Gerenciador_Grafico::Gerenciador_Grafico(
     const std::string& titulo
 )
     : janela_(sf::VideoMode(largura, altura), titulo),
-      chao_(sf::Vector2f(static_cast<float>(largura), 30.0f))
+      chao_(sf::Vector2f(static_cast<float>(largura), 30.0f)),
+      cliquePendente_(false),
+      teclaFPendente_(false)
 {
     janela_.setFramerateLimit(60);
+    janela_.setKeyRepeatEnabled(false);
     chao_.setPosition(
         0.0f,
         static_cast<float>(altura) - chao_.getSize().y
@@ -30,7 +33,40 @@ void Gerenciador_Grafico::processarEventos()
         {
             janela_.close();
         }
+        else if (evento.type == sf::Event::MouseButtonPressed &&
+                 evento.mouseButton.button == sf::Mouse::Left)
+        {
+            posicaoClique_ = sf::Vector2i(
+                evento.mouseButton.x,
+                evento.mouseButton.y
+            );
+            cliquePendente_ = true;
+        }
+        else if (evento.type == sf::Event::KeyPressed &&
+                 evento.key.code == sf::Keyboard::F)
+        {
+            teclaFPendente_ = true;
+        }
     }
+}
+
+bool Gerenciador_Grafico::consumirCliqueMouse(sf::Vector2f& posicao)
+{
+    if (!cliquePendente_)
+    {
+        return false;
+    }
+
+    posicao = janela_.mapPixelToCoords(posicaoClique_);
+    cliquePendente_ = false;
+    return true;
+}
+
+bool Gerenciador_Grafico::consumirPressionamentoF()
+{
+    const bool pressionada = teclaFPendente_;
+    teclaFPendente_ = false;
+    return pressionada;
 }
 
 void Gerenciador_Grafico::limpar()

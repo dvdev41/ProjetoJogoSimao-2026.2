@@ -7,6 +7,7 @@ protected:
     float velocidadeVertical_;
     bool estaNoChao_;
     bool teclaPuloPressionadaAnteriormente_;
+    unsigned int pulosDisponiveis_;
 
     Ente();
     void atualizarGravidade(
@@ -15,7 +16,7 @@ protected:
         float altura,
         float topoChao
     );
-    void pularSeSolicitado(bool teclaPuloPressionada);
+    bool pularSeSolicitado(bool teclaPuloPressionada);
 };
 
 #endif
