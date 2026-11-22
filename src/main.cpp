@@ -2,7 +2,7 @@
 
 int main()
 {
-    Jogo jogo;
+    Controle::Jogo jogo;
     jogo.executar();
     return 0;
 }

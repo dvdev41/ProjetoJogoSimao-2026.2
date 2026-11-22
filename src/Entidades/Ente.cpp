@@ -1,88 +1,50 @@
 #include "Entidades/Ente.h"
 
-namespace
-{
-    const float ACELERACAO_GRAVIDADE = 1100.0f;
-    const float VELOCIDADE_PULO = -480.0f;
+#include "Gerenciadores/Gerenciador_Grafico.h"
 
-    void resolverColisaoChao(
-        float& posicaoY,
-        float altura,
-        float topoChao,
-        float& velocidadeVertical,
-        bool& estaNoChao
-    )
+#include <stdexcept>
+
+namespace Entidades
+{
+    int Ente::proximoId_ = 1;
+    Gerenciadores::Gerenciador_Grafico* Ente::pGG_ = 0;
+
+    Ente::Ente(const sf::Drawable* figura)
+        : id_(proximoId_++),
+          pFig_(figura)
     {
-        const float limiteChao = topoChao - altura;
-        if (posicaoY >= limiteChao)
-        {
-            posicaoY = limiteChao;
-            velocidadeVertical = 0.0f;
-            estaNoChao = true;
-        }
-    }
-}
-
-Ente::Ente()
-    : velocidadeVertical_(0.0f),
-      estaNoChao_(true),
-      teclaPuloPressionadaAnteriormente_(false),
-      pulosDisponiveis_(2)
-{
-}
-
-bool Ente::pularSeSolicitado(bool teclaPuloPressionada)
-{
-    bool puloDuplo = false;
-    if (teclaPuloPressionada &&
-        !teclaPuloPressionadaAnteriormente_ &&
-        pulosDisponiveis_ > 0)
-    {
-        velocidadeVertical_ = VELOCIDADE_PULO;
-        estaNoChao_ = false;
-        --pulosDisponiveis_;
-        puloDuplo = pulosDisponiveis_ == 0;
     }
 
-    teclaPuloPressionadaAnteriormente_ = teclaPuloPressionada;
-    return puloDuplo;
-}
-
-void Ente::atualizarGravidade(
-    float tempoQuadro,
-    float& posicaoY,
-    float altura,
-    float topoChao
-)
-{
-    if (!estaNoChao_)
+    Ente::~Ente()
     {
-        velocidadeVertical_ += ACELERACAO_GRAVIDADE * tempoQuadro;
-        posicaoY += velocidadeVertical_ * tempoQuadro;
+    }
 
-        if (posicaoY < 0.0f)
+    void Ente::setFigura(const sf::Drawable* figura)
+    {
+        pFig_ = figura;
+    }
+
+    void Ente::desenhar()
+    {
+        if (pFig_ != 0)
         {
-            posicaoY = 0.0f;
-            if (velocidadeVertical_ < 0.0f)
+            if (pGG_ == 0)
             {
-                velocidadeVertical_ = 0.0f;
+                throw std::logic_error(
+                    "Gerenciador grafico nao foi configurado."
+                );
             }
-        }
-
-        resolverColisaoChao(
-            posicaoY,
-            altura,
-            topoChao,
-            velocidadeVertical_,
-            estaNoChao_
-        );
-        if (estaNoChao_)
-        {
-            pulosDisponiveis_ = 2;
+            pGG_->desenhar(*pFig_);
         }
     }
-    else
+
+    void Ente::setGG(Gerenciadores::Gerenciador_Grafico* pG)
     {
-        posicaoY = topoChao - altura;
+        pGG_ = pG;
+    }
+
+    int Ente::getId() const
+    {
+        return id_;
     }
 }

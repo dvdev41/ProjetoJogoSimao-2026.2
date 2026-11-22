@@ -1,22 +1,34 @@
 #ifndef ENTE_H
 #define ENTE_H
 
-class Ente
-{
-protected:
-    float velocidadeVertical_;
-    bool estaNoChao_;
-    bool teclaPuloPressionadaAnteriormente_;
-    unsigned int pulosDisponiveis_;
+#include <SFML/Graphics/Drawable.hpp>
 
-    Ente();
-    void atualizarGravidade(
-        float tempoQuadro,
-        float& posicaoY,
-        float altura,
-        float topoChao
-    );
-    bool pularSeSolicitado(bool teclaPuloPressionada);
-};
+namespace Gerenciadores
+{
+    class Gerenciador_Grafico;
+}
+
+namespace Entidades
+{
+    class Ente
+    {
+    protected:
+        static int proximoId_;
+        static Gerenciadores::Gerenciador_Grafico* pGG_;
+        int id_;
+        const sf::Drawable* pFig_;
+
+        explicit Ente(const sf::Drawable* figura = 0);
+        void setFigura(const sf::Drawable* figura);
+
+    public:
+        virtual ~Ente();
+        virtual void executar() = 0;
+        virtual void desenhar();
+
+        static void setGG(Gerenciadores::Gerenciador_Grafico* pG);
+        int getId() const;
+    };
+}
 
 #endif

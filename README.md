@@ -1,20 +1,47 @@
 # ProjetoJogoSimao-2026.2
 
-## SFML e build
+Jogo de plataforma 2D em C++ e SFML, baseado nos assets Pixel Adventure 1. A
+Fase 1 e um percurso lateral de grama e terra com o Ninja Frog, pulo duplo,
+shurikens, caixas quebraveis, frutas, armadilhas, checkpoint e chegada.
 
-O codigo do jogo fica em `src/`, com headers em `headers/` organizados por entidade e gerenciador. Os assets ficam em `assets/`. A copia da SFML 2.6.2 esta separada em `third_party/SFML/`, com headers, DLLs e licenca.
+## Controles
 
-Abra o VS Code a partir do Developer PowerShell x64 do Visual Studio 2022 para que `cl.exe` esteja disponivel e execute a tarefa padrao com `Ctrl+Shift+B`. A tarefa Debug requer as bibliotecas SFML `-d.lib` instaladas em `C:\SFML-2.6.2\lib`; as DLLs locais sao carregadas de `third_party/SFML`.
+- A/D ou setas: mover
+- Espaco ou W: pular; aperte novamente no ar para o pulo duplo
+- F ou clique esquerdo: atirar shuriken
+- Esc: pausar ou continuar
+- R: reiniciar a fase
+- Enter: iniciar ou voltar a jogar
 
-Os arquivos gerados pela compilacao ficam em `build e obj/`.
+## Arquitetura
+
+Os arquivos de `headers/` e `src/` estao organizados por entidades, fases,
+gerenciadores e listas. `Controle::Jogo` coordena a execucao; `Fases::Fase1`
+deriva da classe base `Fases::Fase`; e o jogador segue a hierarquia
+`Entidades::Ente` -> `Entidades::Entidade` -> `Entidades::Personagem` ->
+`Entidades::Personagens::Jogador`. A fase utiliza os gerenciadores grafico e de
+colisoes, alem de uma lista de entidades cujos nos nao sao proprietarios dos
+objetos apontados.
+
+Esta reorganizacao preserva a jogabilidade existente de um jogador e uma fase.
+Novas fases, inimigos, menus e persistencia nao foram adicionados.
+
+## Build SFML
+
+O codigo fica em `src/`, com headers em `headers/`. Instale o Visual Studio 2022
+Build Tools com a carga de trabalho de C++ para Windows. `Ctrl+Shift+B` compila
+e F5 compila e inicia a depuracao; a tarefa localiza o MSVC e configura o
+ambiente automaticamente. Ela usa os headers em `third_party/SFML/include`, as
+bibliotecas de importacao em `sfml/bin` e as DLLs em `third_party/SFML`.
+
+O executavel e os simbolos de depuracao ficam em
+`%TEMP%/ProjetoJogoSimaoBuild`, fora do OneDrive para evitar bloqueios dos
+arquivos intermediarios. O jogo e iniciado com a raiz do repositorio como
+diretorio de trabalho para localizar os assets.
 
 ## Assets
 
-Os 175 arquivos PNG de Pixel Adventure 1 estao em `assets/Pixel Adventure 1/Free/`.
-O jogo carrega as animacoes do Ninja Frog e a cabeca de pedra diretamente desse
-caminho relativo ao diretorio raiz do projeto. Os assets Pixel Adventure 1 sao
-distribuidos sob a licenca CC0, conforme a pagina do autor no itch.io.
-
-Execute o jogo a partir da raiz do repositorio para que os caminhos dos assets
-sejam encontrados. O pacote Pixel Adventure 1 nao inclui as spritesheets dos
-inimigos; a imagem de 20 inimigos e apenas uma previa de Pixel Adventure 2.
+Os assets do Pixel Adventure 1 estao em `assets/Pixel Adventure 1/Free/` e sao
+distribuidos sob a licenca CC0. A imagem `20 Enemies.png` e somente uma previa
+do pacote de inimigos; a fase usa as caixas e armadilhas disponibilizadas no
+pacote gratuito como alvos e perigos.
