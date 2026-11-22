@@ -68,7 +68,7 @@ namespace Fases
     Fase1::Fase1(Gerenciadores::Gerenciador_Grafico& gerenciadorGrafico)
         : Fase(gerenciadorGrafico),
           sapoNinja_(0.0f, 0.0f),
-          estado_(Introducao),
+          estado_(MenuPrincipal),
           larguraNivel_(0.0f),
           cameraX_(0.0f),
           tempoInvulneravel_(0.0f),
@@ -76,6 +76,7 @@ namespace Fases
           tempoInicio_(0.0f),
           tempoCheckpoint_(0.0f),
           tempoSaida_(0.0f),
+          faseSelecionada_(1),
           quadroInicio_(0),
           quadroCheckpoint_(0),
           quadroSaida_(0),
@@ -595,9 +596,65 @@ void Fase1::atualizar(float tempoQuadro)
         gerenciadorGrafico_.consumirPressionamentoTecla(sf::Keyboard::R);
     const bool atirar =
         gerenciadorGrafico_.consumirPressionamentoTecla(sf::Keyboard::F);
+    const bool fase1 =
+        gerenciadorGrafico_.consumirPressionamentoTecla(sf::Keyboard::Num1);
+    const bool fase2 =
+        gerenciadorGrafico_.consumirPressionamentoTecla(sf::Keyboard::Num2);
     sf::Vector2f posicaoClique;
     const bool clicou =
         gerenciadorGrafico_.consumirCliqueMouse(posicaoClique);
+
+    if (estado_ == MenuPrincipal)
+    {
+        if (enter || espaco || clicou)
+        {
+            estado_ = SelecaoFase;
+        }
+        atualizarCamera();
+        return;
+    }
+
+    if (estado_ == SelecaoFase)
+    {
+        if (fase1 || fase2)
+        {
+            faseSelecionada_ = fase2 ? 2 : 1;
+            fundo_.setColor(
+                faseSelecionada_ == 1
+                    ? sf::Color::White
+                    : sf::Color(145, 160, 220)
+            );
+            estado_ = Jogando;
+        }
+        else if (clicou &&
+                 posicaoClique.y >= 215.0f &&
+                 posicaoClique.y < 275.0f)
+        {
+            faseSelecionada_ = 1;
+            fundo_.setColor(sf::Color::White);
+            estado_ = Jogando;
+        }
+        else if (clicou &&
+                 posicaoClique.y >= 275.0f &&
+                 posicaoClique.y < 340.0f)
+        {
+            faseSelecionada_ = 2;
+            fundo_.setColor(sf::Color(145, 160, 220));
+            estado_ = Jogando;
+        }
+        else if (enter || espaco)
+        {
+            faseSelecionada_ = 1;
+            fundo_.setColor(sf::Color::White);
+            estado_ = Jogando;
+        }
+        else if (escape)
+        {
+            estado_ = MenuPrincipal;
+        }
+        atualizarCamera();
+        return;
+    }
 
     if (estado_ == Introducao)
     {
@@ -1229,6 +1286,71 @@ void Fase1::desenharTextoCentralizado(
 
 void Fase1::desenhar()
 {
+    if (estado_ == MenuPrincipal || estado_ == SelecaoFase)
+    {
+        gerenciadorGrafico_.restaurarVistaPadrao();
+        fundo_.setPosition(cameraX_, 0.0f);
+        gerenciadorGrafico_.desenhar(fundo_);
+        sf::RectangleShape faixa(
+            sf::Vector2f(
+                static_cast<float>(gerenciadorGrafico_.getLarguraJanela()),
+                static_cast<float>(gerenciadorGrafico_.getAlturaJanela())
+            )
+        );
+        faixa.setFillColor(sf::Color(11, 19, 23, 150));
+        gerenciadorGrafico_.desenhar(faixa);
+        if (estado_ == MenuPrincipal)
+        {
+            desenharTextoCentralizado(
+                "NINJA FROG",
+                145.0f,
+                5.0f,
+                sf::Color(246, 245, 220)
+            );
+            gerenciadorGrafico_.desenhar(botaoJogar_);
+            desenharTextoCentralizado(
+                "ENTER OU CLIQUE PARA JOGAR",
+                405.0f,
+                1.5f,
+                sf::Color(192, 230, 159)
+            );
+        }
+        else
+        {
+            desenharTextoCentralizado(
+                "ESCOLHA A FASE",
+                125.0f,
+                3.5f,
+                sf::Color(246, 245, 220)
+            );
+            desenharTextoCentralizado(
+                "1 FASE 1 BOSQUE VERDE",
+                235.0f,
+                2.0f,
+                sf::Color(192, 230, 159)
+            );
+            desenharTextoCentralizado(
+                "2 FASE 2 BOSQUE NOTURNO",
+                295.0f,
+                2.0f,
+                sf::Color(192, 230, 159)
+            );
+            desenharTextoCentralizado(
+                "PRESSIONE 1 OU 2 PARA JOGAR",
+                385.0f,
+                1.5f,
+                sf::Color::White
+            );
+            desenharTextoCentralizado(
+                "ESC VOLTA AO MENU",
+                425.0f,
+                1.5f,
+                sf::Color::White
+            );
+        }
+        return;
+    }
+
     desenharMundo();
     desenharHud();
 
@@ -1236,7 +1358,9 @@ void Fase1::desenhar()
     {
         desenharOverlay(
             "NINJA FROG",
-            "FASE 1 BOSQUE VERDE",
+            faseSelecionada_ == 1
+                ? "FASE 1 BOSQUE VERDE"
+                : "FASE 2 BOSQUE NOTURNO",
             "ENTER PARA JOGAR"
         );
         gerenciadorGrafico_.desenhar(botaoJogar_);
